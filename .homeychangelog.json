@@ -37,5 +37,8 @@
   },
   "1.6.1": {
     "en": "Fixed an issue where the chamber temperature would not be updated on printers with the latest firmware."
+  },
+  "1.7.0": {
+    "en": "Added video streaming."
   }
 }
