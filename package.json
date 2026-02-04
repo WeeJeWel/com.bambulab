@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "homey-oauth2app": "^3.7.0",
-    "mqtt": "^5.10.2"
+    "mqtt": "^5.10.2",
+    "semver": "^7.7.3"
   }
 }
