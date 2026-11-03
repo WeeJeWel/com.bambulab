@@ -27,6 +27,9 @@ module.exports = {
         id: tray.id,
         color: `#${tray.tray_color?.substr(0, 6)}`,
         type: tray.tray_type,
+        // percentage of filament left; only known for Bambu spools with an RFID tag (the printer sends -1 otherwise)
+        remain: Number.isFinite(tray.remain) && tray.remain >= 0 ? tray.remain : null,
+        brand: tray.tray_sub_brands || null,
       })),
     };
   },
