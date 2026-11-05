@@ -67,6 +67,41 @@
       },
       "onoff.light_work_false": {
         "title": "The work light turned off"
+      },
+      "filament_low": {
+        "title": "A spool is almost empty",
+        "titleFormatted": "A spool has less than [[grams]] grams left",
+        "args": {
+          "grams": {
+            "title": "Grams"
+          }
+        },
+        "tokens": {
+          "ams": {
+            "title": "AMS"
+          },
+          "slot": {
+            "title": "Slot"
+          },
+          "type": {
+            "title": "Filament type"
+          },
+          "brand": {
+            "title": "Filament"
+          },
+          "color": {
+            "title": "Colour code"
+          },
+          "color_name": {
+            "title": "Colour name"
+          },
+          "grams": {
+            "title": "Grams left"
+          },
+          "percent": {
+            "title": "Percentage left"
+          }
+        }
       }
     },
     "conditions": {},

@@ -9,6 +9,17 @@
       user-select: none;
     }
 
+    #name {
+      color: #9A9A9F;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 8px 2px;
+    }
+
+    #name:empty {
+      display: none;
+    }
+
     #trays {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -47,6 +58,48 @@
 
     #trays>.tray.is-light>.type {
       color: black;
+    }
+
+    /* the part of the spool that is used up, from the top down */
+    #trays>.tray::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: calc((100 - var(--left, 100)) * 1%);
+      background-color: rgba(0, 0, 0, 0.45);
+      border-radius: 10px 10px 0 0;
+      pointer-events: none;
+    }
+
+    #trays>.tray>.type,
+    #trays>.tray>.left {
+      position: relative;
+      z-index: 1;
+    }
+
+    #trays>.tray {
+      flex-direction: column;
+    }
+
+    #trays>.tray>.left {
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    #trays>.tray.is-light>.left {
+      color: black;
+    }
+
+    #trays>.tray>.left:empty {
+      display: none;
+    }
+
+    #trays>.tray[hidden] {
+      display: none;
     }
 
     #sensors-wrap {
@@ -134,19 +187,23 @@
 
   <div id="error"></div>
 
+  <div id="name"></div>
+
   <div id="trays">
     <div
       data-tray="0"
       class="tray"
     >
       <div class="type"></div>
+      <div class="left"></div>
     </div>
 
     <div
       data-tray="1"
-      class="tray is-active"
+      class="tray"
     >
       <div class="type"></div>
+      <div class="left"></div>
     </div>
 
     <div
@@ -154,6 +211,7 @@
       class="tray"
     >
       <div class="type"></div>
+      <div class="left"></div>
     </div>
 
     <div
@@ -161,6 +219,7 @@
       class="tray"
     >
       <div class="type"></div>
+      <div class="left"></div>
     </div>
   </div>
 
@@ -195,33 +254,42 @@
       function getStatus() {
         Homey.api('GET', `/status?deviceId=${deviceId}&amsId=${amsId}`, {})
           .then(({
+            name,
             temperature,
-            humidity,
+            humidityText,
             trays,
-            trayLoadedId,
           }) => {
-            document.querySelector('[data-tray="0"]').style.backgroundColor = trays[0].color;
-            document.querySelector('[data-tray="0"]').classList.toggle('is-light', lightOrDark(trays[0].color) === 'light');
-            document.querySelector('[data-tray="0"]').classList.toggle('is-active', Number(trayLoadedId) === Number(trays[0].id) + Number(amsId) * 4);
-            document.querySelector('[data-tray="0"] > .type').innerText = trays[0].type ?? '';
+            document.getElementById('trays').style.gridTemplateColumns = `repeat(${Math.max(trays.length, 1)}, 1fr)`;
+            for (let i = 0; i < 4; i++) {
+              const el = document.querySelector(`[data-tray="${i}"]`);
+              const tray = trays[i];
+              el.hidden = !tray;
 
-            document.querySelector('[data-tray="1"]').style.backgroundColor = trays[1].color;
-            document.querySelector('[data-tray="1"]').classList.toggle('is-light', lightOrDark(trays[1].color) === 'light');
-            document.querySelector('[data-tray="1"]').classList.toggle('is-active', Number(trayLoadedId) === Number(trays[1].id) + Number(amsId) * 4);
-            document.querySelector('[data-tray="1"] > .type').innerText = trays[1].type ?? '';
+              if (tray) {
+                const color = /^#[0-9a-f]{6}$/i.test(tray.color)
+                  ? tray.color
+                  : null;
+                el.style.backgroundColor = color ?? 'rgba(0, 0, 0, 0.1)';
+                el.classList.toggle('is-light', !!color && lightOrDark(color) === 'light');
+                el.classList.toggle('is-active', tray.loaded);
+                el.querySelector('.type').innerText = tray.type ?? '';
 
-            document.querySelector('[data-tray="2"]').style.backgroundColor = trays[2].color;
-            document.querySelector('[data-tray="2"]').classList.toggle('is-light', lightOrDark(trays[2].color) === 'light');
-            document.querySelector('[data-tray="2"]').classList.toggle('is-active', Number(trayLoadedId) === Number(trays[2].id) + Number(amsId) * 4);
-            document.querySelector('[data-tray="2"] > .type').innerText = trays[2].type ?? '';
+                // How full the spool is: the colour fills up to that level, the grams (or percentage) below the type
+                const remain = typeof tray.remain === 'number'
+                  ? tray.remain
+                  : null;
+                el.style.setProperty('--left', String(remain ?? 100));
 
-            document.querySelector('[data-tray="3"]').style.backgroundColor = trays[3].color;
-            document.querySelector('[data-tray="3"]').classList.toggle('is-light', lightOrDark(trays[3].color) === 'light');
-            document.querySelector('[data-tray="3"]').classList.toggle('is-active', Number(trayLoadedId) === Number(trays[3].id) + Number(amsId) * 4);
-            document.querySelector('[data-tray="3"] > .type').innerText = trays[3].type ?? '';
+                let left = '';
+                if (remain !== null && tray.weight) left = `${Math.round((remain / 100) * tray.weight)} g`;
+                else if (remain !== null) left = `${remain}%`;
+                el.querySelector('.left').innerText = left;
+              }
+            }
 
             document.querySelector('#sensor-temperature > .text').innerText = `${temperature}°C`;
-            document.querySelector('#sensor-humidity > .text').innerText = `${humidity}`;
+            document.querySelector('#sensor-humidity > .text').innerText = humidityText;
+            document.getElementById('name').innerText = name ?? '';
 
             document.getElementById('error').innerText = '';
           })

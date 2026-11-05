@@ -1,0 +1,10 @@
+{
+  "type": "string",
+  "title": {
+    "en": "AMS Humidity",
+    "nl": "AMS-vochtigheid"
+  },
+  "getable": true,
+  "setable": false,
+  "icon": "/assets/icons/bambu_ams_humidity.svg"
+}
