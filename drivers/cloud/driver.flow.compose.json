@@ -35,6 +35,56 @@
     },
     {
       "id": "onoff.light_work_false"
+    },
+    {
+      "id": "filament_low",
+      "args": [
+        {
+          "name": "grams",
+          "type": "number",
+          "min": 0,
+          "max": 1000,
+          "step": 10,
+          "placeholder": "100"
+        }
+      ],
+      "tokens": [
+        {
+          "name": "ams",
+          "type": "string",
+          "example": "AMS"
+        },
+        {
+          "name": "slot",
+          "type": "number",
+          "example": 1
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "example": "PLA"
+        },
+        {
+          "name": "brand",
+          "type": "string",
+          "example": "PLA Basic"
+        },
+        {
+          "name": "color",
+          "type": "string",
+          "example": "#F4D53F"
+        },
+        {
+          "name": "grams",
+          "type": "number",
+          "example": 90
+        },
+        {
+          "name": "percent",
+          "type": "number",
+          "example": 9
+        }
+      ]
     }
   ],
   "actions": [

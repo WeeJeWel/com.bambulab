@@ -67,6 +67,38 @@
       },
       "onoff.light_work_false": {
         "title": "Het werklicht is uitgeschakeld"
+      },
+      "filament_low": {
+        "title": "Een spoel is bijna op",
+        "titleFormatted": "Een spoel heeft minder dan [[grams]] gram over",
+        "args": {
+          "grams": {
+            "title": "Gram"
+          }
+        },
+        "tokens": {
+          "ams": {
+            "title": "AMS"
+          },
+          "slot": {
+            "title": "Plek"
+          },
+          "type": {
+            "title": "Filamenttype"
+          },
+          "brand": {
+            "title": "Filament"
+          },
+          "color": {
+            "title": "Kleur"
+          },
+          "grams": {
+            "title": "Gram over"
+          },
+          "percent": {
+            "title": "Procent over"
+          }
+        }
       }
     },
     "conditions": {},

@@ -1,0 +1,14 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Filament Left",
+    "nl": "Filament over"
+  },
+  "units": "g",
+  "decimals": 0,
+  "min": 0,
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "icon": "/assets/icons/bambu_filament_remaining.svg"
+}

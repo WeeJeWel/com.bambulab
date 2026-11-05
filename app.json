@@ -164,6 +164,101 @@
           "en": "The work light turned off",
           "nl": "Het werklicht is uitgeschakeld"
         }
+      },
+      {
+        "id": "filament_low",
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=cloud"
+          },
+          {
+            "name": "grams",
+            "type": "number",
+            "min": 0,
+            "max": 1000,
+            "step": 10,
+            "placeholder": "100",
+            "title": {
+              "en": "Grams",
+              "nl": "Gram"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "ams",
+            "type": "string",
+            "example": "AMS",
+            "title": {
+              "en": "AMS",
+              "nl": "AMS"
+            }
+          },
+          {
+            "name": "slot",
+            "type": "number",
+            "example": 1,
+            "title": {
+              "en": "Slot",
+              "nl": "Plek"
+            }
+          },
+          {
+            "name": "type",
+            "type": "string",
+            "example": "PLA",
+            "title": {
+              "en": "Filament type",
+              "nl": "Filamenttype"
+            }
+          },
+          {
+            "name": "brand",
+            "type": "string",
+            "example": "PLA Basic",
+            "title": {
+              "en": "Filament",
+              "nl": "Filament"
+            }
+          },
+          {
+            "name": "color",
+            "type": "string",
+            "example": "#F4D53F",
+            "title": {
+              "en": "Colour",
+              "nl": "Kleur"
+            }
+          },
+          {
+            "name": "grams",
+            "type": "number",
+            "example": 90,
+            "title": {
+              "en": "Grams left",
+              "nl": "Gram over"
+            }
+          },
+          {
+            "name": "percent",
+            "type": "number",
+            "example": 9,
+            "title": {
+              "en": "Percentage left",
+              "nl": "Procent over"
+            }
+          }
+        ],
+        "title": {
+          "en": "A spool is almost empty",
+          "nl": "Een spoel is bijna op"
+        },
+        "titleFormatted": {
+          "en": "A spool has less than [[grams]] grams left",
+          "nl": "Een spoel heeft minder dan [[grams]] gram over"
+        }
       }
     ],
     "actions": [
@@ -505,6 +600,20 @@
     }
   },
   "capabilities": {
+    "bambu_filament_remaining": {
+      "type": "number",
+      "title": {
+        "en": "Filament Left",
+        "nl": "Filament over"
+      },
+      "units": "g",
+      "decimals": 0,
+      "min": 0,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "icon": "/assets/icons/bambu_filament_remaining.svg"
+    },
     "bambu_print_layers": {
       "type": "string",
       "title": "Print Layers",
