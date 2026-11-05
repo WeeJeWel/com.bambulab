@@ -1,1 +1,30 @@
-{}
+{
+  "ams": {
+    "temperature": "__name__ temperatuur",
+    "humidity": "__name__ vochtigheid",
+    "slot": "__ams__ slot __slot__: __spool__",
+    "empty": "leeg",
+    "humidityLevels": {
+      "1": "droog",
+      "2": "droog",
+      "3": "wat vochtig",
+      "4": "vochtig",
+      "5": "erg vochtig"
+    },
+    "colors": {
+      "white": "Wit",
+      "black": "Zwart",
+      "grey": "Grijs",
+      "red": "Rood",
+      "orange": "Oranje",
+      "yellow": "Geel",
+      "green": "Groen",
+      "blue": "Blauw",
+      "lightBlue": "Lichtblauw",
+      "purple": "Paars",
+      "pink": "Roze",
+      "brown": "Bruin",
+      "beige": "Beige"
+    }
+  }
+}

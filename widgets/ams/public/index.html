@@ -261,7 +261,7 @@
             trays,
             trayLoadedId,
           }) => {
-            document.getElementById('trays').style.gridTemplateColumns = `repeat(${trays.length}, 1fr)`;
+            document.getElementById('trays').style.gridTemplateColumns = `repeat(${Math.max(trays.length, 1)}, 1fr)`;
             for (let i = 0; i < 4; i++) {
               const el = document.querySelector(`[data-tray="${i}"]`);
               const tray = trays[i];

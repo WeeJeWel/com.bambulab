@@ -1,1 +1,30 @@
-{}
+{
+  "ams": {
+    "temperature": "__name__ temperature",
+    "humidity": "__name__ humidity",
+    "slot": "__ams__ slot __slot__: __spool__",
+    "empty": "empty",
+    "humidityLevels": {
+      "1": "dry",
+      "2": "dry",
+      "3": "a bit humid",
+      "4": "humid",
+      "5": "very humid"
+    },
+    "colors": {
+      "white": "White",
+      "black": "Black",
+      "grey": "Grey",
+      "red": "Red",
+      "orange": "Orange",
+      "yellow": "Yellow",
+      "green": "Green",
+      "blue": "Blue",
+      "lightBlue": "Light blue",
+      "purple": "Purple",
+      "pink": "Pink",
+      "brown": "Brown",
+      "beige": "Beige"
+    }
+  }
+}
