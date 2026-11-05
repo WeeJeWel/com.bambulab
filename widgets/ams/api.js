@@ -22,13 +22,12 @@ module.exports = {
     }
 
     const { default: BambuAms } = await import('../../lib/BambuAms.mjs');
-    const trayNow = Number(device.state?.print?.ams?.tray_now);
 
     return {
       name: BambuAms.getUnitName({ units, unit: ams }),
       humidity: 6 - ams.humidity,
       humidityText: BambuAms.getHumidityText({
-        level: 6 - ams.humidity,
+        unit: ams,
         __: (key, tokens) => homey.__(key, tokens),
       }),
       temperature: ams.temp,
@@ -37,7 +36,11 @@ module.exports = {
         id: tray.id,
         color: `#${tray.tray_color?.substr(0, 6)}`,
         type: tray.tray_type,
-        loaded: trayNow === BambuAms.getTrayNow({ amsId: ams.id, trayId: tray.id }),
+        loaded: BambuAms.isLoaded({
+          print: device.state?.print,
+          amsId: ams.id,
+          trayId: tray.id,
+        }),
         // Only Bambu spools with an RFID tag report what is left
         remain: Number.isFinite(tray.remain) && tray.remain >= 0
           ? tray.remain

@@ -20,6 +20,7 @@ const units = [
   {
     id: '0',
     humidity: '2',
+    humidity_raw: '43',
     temp: '25.2',
     tray: [
       { id: '0', remain: 17, tray_weight: '1000', tray_type: 'PLA', tray_sub_brands: 'PLA Tough+', tray_color: 'F4D53FFF' },
@@ -41,13 +42,13 @@ const units = [
 test('getCapabilities: every AMS with its temperature and humidity, every slot with the grams left', () => {
   assert.deepEqual(BambuAms.getCapabilities({ units, __: nl }).map(({ id, title, value }) => [id, title, value]), [
     ['measure_temperature.ams0', 'AMS temperatuur', 25.2],
-    ['bambu_ams_humidity.ams0', 'AMS vochtigheid', 'vochtig'],
+    ['bambu_ams_humidity.ams0', 'AMS vochtigheid', 'vochtig (43%)'],
     ['bambu_filament_remaining.ams0_slot1', 'AMS slot 1: Geel PLA Tough+', 170],
     ['bambu_filament_remaining.ams0_slot2', 'AMS slot 2: Wit PLA Matte', 840],
     ['bambu_filament_remaining.ams0_slot3', 'AMS slot 3: Blauw PLA', null], // no RFID tag: amount unknown
     ['bambu_filament_remaining.ams0_slot4', 'AMS slot 4: leeg', null], // empty slot: no old amount left behind
     ['measure_temperature.ams128', 'AMS HT temperatuur', 23.7],
-    ['bambu_ams_humidity.ams128', 'AMS HT vochtigheid', 'erg vochtig'],
+    ['bambu_ams_humidity.ams128', 'AMS HT vochtigheid', 'erg vochtig'], // no humidity_raw: words only
     ['bambu_filament_remaining.ams128_slot1', 'AMS HT slot 1: Groen PETG HF', 250],
   ]);
 });
@@ -78,15 +79,30 @@ test('getUnitName: AMS or AMS HT (id 128 and up), numbered when there are severa
   assert.deepEqual(four.map(unit => BambuAms.getUnitName({ units: four, unit })), ['AMS 1', 'AMS 2', 'AMS HT 1', 'AMS HT 2']);
 });
 
-test('getTrayNow: 4 per AMS, an AMS HT has its own number', () => {
-  assert.equal(BambuAms.getTrayNow({ amsId: '0', trayId: '2' }), 2);
-  assert.equal(BambuAms.getTrayNow({ amsId: '1', trayId: '0' }), 4);
-  assert.equal(BambuAms.getTrayNow({ amsId: '128', trayId: '0' }), 128);
+test('getLoadedTrays: newer printers report the loaded tray per extruder as (AMS id << 8) | tray', () => {
+  // Measured on a P2S with the spool of the AMS HT loaded: tray_now says only the slot
+  const print = {
+    ams: { tray_now: '0' },
+    device: { extruder: { info: [{ id: 0, snow: 32768 }] } },
+  };
+  assert.deepEqual(BambuAms.getLoadedTrays({ print }), [{ amsId: 128, trayId: 0 }]);
+  assert.equal(BambuAms.isLoaded({ print, amsId: '128', trayId: '0' }), true);
+  assert.equal(BambuAms.isLoaded({ print, amsId: '0', trayId: '0' }), false);
+  // Nothing or the external spool loaded
+  assert.deepEqual(BambuAms.getLoadedTrays({ print: { device: { extruder: { info: [{ snow: 65535 }] } } } }), []);
+  assert.deepEqual(BambuAms.getLoadedTrays({ print: { device: { extruder: { info: [{ snow: 65280 }] } } } }), []);
 });
 
-test('getHumidityText: the level (1 dry to 5 very humid) in words', () => {
-  assert.deepEqual([1, 2, 3, 4, 5].map(level => BambuAms.getHumidityText({ level, __: nl })), ['droog', 'droog', 'wat vochtig', 'vochtig', 'erg vochtig']);
-  assert.equal(BambuAms.getHumidityText({ level: 5, __: en }), 'very humid');
+test('getLoadedTrays: older printers report tray_now, 4 trays per AMS', () => {
+  assert.deepEqual(BambuAms.getLoadedTrays({ print: { ams: { tray_now: '5' } } }), [{ amsId: 1, trayId: 1 }]);
+  assert.deepEqual(BambuAms.getLoadedTrays({ print: { ams: { tray_now: '255' } } }), []);
+  assert.deepEqual(BambuAms.getLoadedTrays({ print: { ams: { tray_now: '254' } } }), []);
+  assert.deepEqual(BambuAms.getLoadedTrays({ print: undefined }), []);
+});
+
+test('getHumidityText: the level in words (the printer reports 5 as dry), with the percentage when known', () => {
+  assert.deepEqual(['5', '4', '3', '2', '1'].map(humidity => BambuAms.getHumidityText({ unit: { humidity }, __: nl })), ['droog', 'droog', 'wat vochtig', 'vochtig', 'erg vochtig']);
+  assert.equal(BambuAms.getHumidityText({ unit: { humidity: '1', humidity_raw: '52' }, __: en }), 'very humid (52%)');
 });
 
 test('getColorName: the nearest colour name', () => {
