@@ -23,6 +23,8 @@ module.exports = {
       humidity: 6 - ams.humidity,
       temperature: ams.temp,
       trayLoadedId: device.state?.print?.ams?.tray_now,
+      // whether the 'filament left' capabilities could be made (installed apps show no logs)
+      filamentStatus: device.filamentStatus ?? null,
       trays: ams.tray.map(tray => ({
         id: tray.id,
         color: `#${tray.tray_color?.substr(0, 6)}`,
