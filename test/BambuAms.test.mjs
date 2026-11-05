@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { amsSpools, colorName, crossedBelow, spoolTitle } from '../lib/BambuAms.mjs';
+import { amsSpools, amsUnitName, amsUnits, colorName, crossedBelow, humidityText, spoolTitle, trayNow } from '../lib/BambuAms.mjs';
 
 const ams = [
   {
@@ -17,10 +17,11 @@ const ams = [
   { id: '128', tray: [{ id: '0', remain: 50, tray_weight: '500', tray_type: 'PETG', tray_sub_brands: 'PETG HF', tray_color: '0ACC38FF' }] },
 ];
 
-test('lists the spools whose filament left is known, in grams and percent', () => {
+test('lists every loaded spool, with the filament left in grams and percent when the printer knows it', () => {
   assert.deepEqual(amsSpools(ams), [
     { key: 'ams0_slot1', ams: 'AMS', slot: 1, type: 'PLA', brand: 'PLA Tough+', color: '#F4D53F', percent: 17, grams: 170 },
     { key: 'ams0_slot2', ams: 'AMS', slot: 2, type: 'PLA', brand: 'PLA Matte', color: '#FFFFFF', percent: 84, grams: 840 },
+    { key: 'ams0_slot3', ams: 'AMS', slot: 3, type: 'PLA', brand: 'PLA', color: '#0A2989', percent: null, grams: null }, // no tag
     { key: 'ams128_slot1', ams: 'AMS HT', slot: 1, type: 'PETG', brand: 'PETG HF', color: '#0ACC38', percent: 50, grams: 250 },
   ]);
 });
@@ -59,4 +60,28 @@ test('titles a spool by AMS, slot, colour and filament', () => {
   const [first] = amsSpools(ams);
   assert.equal(spoolTitle(first, 'nl'), 'AMS slot 1: Geel PLA Tough+');
   assert.equal(spoolTitle({ ...first, ams: 'AMS 2', slot: 3 }, 'en'), 'AMS 2 slot 3: Yellow PLA Tough+');
+});
+
+test('names an AMS unit the same way everywhere', () => {
+  assert.equal(amsUnitName(ams, ams[0]), 'AMS');
+  assert.equal(amsUnitName(ams, ams[1]), 'AMS HT');
+});
+
+test('knows the number the printer uses for the loaded spool, also on an AMS HT (id 128 and up)', () => {
+  assert.equal(trayNow('0', '2'), 2);
+  assert.equal(trayNow('1', '0'), 4);
+  assert.equal(trayNow('128', '0'), 128);
+});
+
+test('gives each AMS unit with its temperature and humidity level (1 dry to 5 very humid)', () => {
+  const units = [{ id: '0', humidity: '2', temp: '25.2', tray: [{}, {}, {}, {}] }, { id: '128', humidity: '1', temp: '23.7', tray: [{}] }];
+  assert.deepEqual(amsUnits(units), [
+    { key: 'ams0', name: 'AMS', temperature: 25.2, humidity: 4 },
+    { key: 'ams128', name: 'AMS HT', temperature: 23.7, humidity: 5 },
+  ]);
+});
+
+test('says how humid an AMS is in words', () => {
+  assert.deepEqual([1, 2, 3, 4, 5].map(l => humidityText(l, 'nl')), ['droog', 'droog', 'wat vochtig', 'vochtig', 'erg vochtig']);
+  assert.equal(humidityText(5, 'en'), 'very humid');
 });

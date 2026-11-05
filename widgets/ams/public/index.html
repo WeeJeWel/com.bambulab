@@ -256,7 +256,7 @@
               const color = /^#[0-9a-f]{6}$/i.test(tray.color) ? tray.color : null;
               el.style.backgroundColor = color ?? 'rgba(0, 0, 0, 0.1)';
               el.classList.toggle('is-light', !!color && lightOrDark(color) === 'light');
-              el.classList.toggle('is-active', Number(trayLoadedId) === Number(tray.id) + Number(amsId) * 4);
+              el.classList.toggle('is-active', tray.loaded ?? Number(trayLoadedId) === Number(tray.id) + Number(amsId) * 4);
               el.querySelector('.type').innerText = tray.type ?? '';
 
               // how full the spool is: the colour fills up to that level, the grams (or percentage) below the type

@@ -14,7 +14,9 @@ module.exports = {
       throw new Error('AMS ID Not Found');
     }
 
-    const ams = device.state?.print?.ams?.ams[amsId];
+    // the setting holds the AMS id (an AMS HT has 128 and up), older callers its place in the list
+    const units = device.state?.print?.ams?.ams ?? [];
+    const ams = units.find(unit => String(unit.id) === String(amsId)) ?? units[amsId];
     if (!ams) {
       throw new Error('AMS Not Found');
     }
@@ -27,6 +29,9 @@ module.exports = {
       filamentStatus: device.filamentStatus ?? null,
       trays: ams.tray.map(tray => ({
         id: tray.id,
+        // tray_now counts 4 per AMS; an AMS HT (id 128 and up) has its own number (see trayNow in lib/BambuAms.mjs)
+        loaded: Number(device.state?.print?.ams?.tray_now)
+          === (Number(ams.id) >= 128 ? Number(ams.id) + Number(tray.id) : Number(ams.id) * 4 + Number(tray.id)),
         color: `#${tray.tray_color?.substr(0, 6)}`,
         type: tray.tray_type,
         // percentage of filament left; only known for Bambu spools with an RFID tag (the printer sends -1 otherwise)
