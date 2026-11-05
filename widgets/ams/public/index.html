@@ -256,36 +256,39 @@
           .then(({
             name,
             temperature,
-            humidity,
             humidityText,
             trays,
-            trayLoadedId,
           }) => {
             document.getElementById('trays').style.gridTemplateColumns = `repeat(${Math.max(trays.length, 1)}, 1fr)`;
             for (let i = 0; i < 4; i++) {
               const el = document.querySelector(`[data-tray="${i}"]`);
               const tray = trays[i];
               el.hidden = !tray;
-              if (!tray) continue;
 
-              const color = /^#[0-9a-f]{6}$/i.test(tray.color) ? tray.color : null;
-              el.style.backgroundColor = color ?? 'rgba(0, 0, 0, 0.1)';
-              el.classList.toggle('is-light', !!color && lightOrDark(color) === 'light');
-              el.classList.toggle('is-active', tray.loaded ?? Number(trayLoadedId) === Number(tray.id) + Number(amsId) * 4);
-              el.querySelector('.type').innerText = tray.type ?? '';
+              if (tray) {
+                const color = /^#[0-9a-f]{6}$/i.test(tray.color)
+                  ? tray.color
+                  : null;
+                el.style.backgroundColor = color ?? 'rgba(0, 0, 0, 0.1)';
+                el.classList.toggle('is-light', !!color && lightOrDark(color) === 'light');
+                el.classList.toggle('is-active', tray.loaded);
+                el.querySelector('.type').innerText = tray.type ?? '';
 
-              // how full the spool is: the colour fills up to that level, the grams (or percentage) below the type
-              const remain = typeof tray.remain === 'number' ? tray.remain : null;
-              el.style.setProperty('--left', String(remain ?? 100));
-              let left = '';
-              if (remain !== null && tray.weight) left = `${Math.round((remain / 100) * tray.weight)} g`;
-              else if (remain !== null) left = `${remain}%`;
-              el.querySelector('.left').innerText = left;
+                // How full the spool is: the colour fills up to that level, the grams (or percentage) below the type
+                const remain = typeof tray.remain === 'number'
+                  ? tray.remain
+                  : null;
+                el.style.setProperty('--left', String(remain ?? 100));
+
+                let left = '';
+                if (remain !== null && tray.weight) left = `${Math.round((remain / 100) * tray.weight)} g`;
+                else if (remain !== null) left = `${remain}%`;
+                el.querySelector('.left').innerText = left;
+              }
             }
 
             document.querySelector('#sensor-temperature > .text').innerText = `${temperature}°C`;
-            // the humidity in words (dry ... very humid), the level 1 to 5 only when the app is older
-            document.querySelector('#sensor-humidity > .text').innerText = humidityText ?? `${humidity}`;
+            document.querySelector('#sensor-humidity > .text').innerText = humidityText;
             document.getElementById('name').innerText = name ?? '';
 
             document.getElementById('error').innerText = '';

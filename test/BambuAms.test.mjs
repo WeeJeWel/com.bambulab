@@ -117,11 +117,37 @@ test('getColorName: the nearest colour name', () => {
   assert.equal(BambuAms.getColorName({ color: '#undefined', __: nl }), '');
 });
 
-test('crossedBelow: once when a spool goes below the limit, not for a new spool or at start-up', () => {
+test('crossedBelow: once when a spool goes below the limit, and for a low spool put into an empty slot', () => {
   assert.equal(BambuAms.crossedBelow({ previous: 110, grams: 95, limit: 100 }), true);
-  assert.equal(BambuAms.crossedBelow({ previous: 95, grams: 90, limit: 100 }), false);
-  assert.equal(BambuAms.crossedBelow({ previous: 90, grams: 1000, limit: 100 }), false);
-  assert.equal(BambuAms.crossedBelow({ previous: null, grams: 90, limit: 100 }), false);
+  assert.equal(BambuAms.crossedBelow({ previous: 95, grams: 90, limit: 100 }), false); // already below
+  assert.equal(BambuAms.crossedBelow({ previous: 90, grams: 1000, limit: 100 }), false); // a new full spool
+  assert.equal(BambuAms.crossedBelow({ previous: null, grams: 60, limit: 100 }), true); // low spool in an empty slot
+  assert.equal(BambuAms.crossedBelow({ previous: null, grams: 900, limit: 100 }), false);
+});
+
+test('getHumidityText: nothing for a unit that reports no humidity', () => {
+  assert.equal(BambuAms.getHumidityText({ unit: {}, __: nl }), '');
+});
+
+test('mergeUnits: a report with only some AMS units or trays keeps the others', () => {
+  const current = [
+    { id: '0', temp: '21', tray: [{ id: '0', tray_type: 'PLA' }, { id: '1', tray_type: 'PETG' }] },
+    { id: '128', temp: '20', tray: [{ id: '0', tray_type: 'TPU' }] },
+  ];
+  const merged = BambuAms.mergeUnits({
+    current,
+    incoming: [{ id: '0', temp: '22', tray: [{ id: '1' }] }], // only AMS 0, tray 1 emptied
+  });
+  assert.deepEqual(merged, [
+    { id: '0', temp: '22', tray: [{ id: '0', tray_type: 'PLA' }, { id: '1' }] },
+    { id: '128', temp: '20', tray: [{ id: '0', tray_type: 'TPU' }] },
+  ]);
+});
+
+test('isFullStatus: the answer to pushall has msg 0, a report of changes msg 1', () => {
+  assert.equal(BambuAms.isFullStatus({ print: { command: 'push_status', msg: 0 } }), true);
+  assert.equal(BambuAms.isFullStatus({ print: { command: 'push_status', msg: 1 } }), false);
+  assert.equal(BambuAms.isFullStatus({ system: {} }), false);
 });
 
 test('runLatest: one run at a time, and one more run for what came in meanwhile', async () => {

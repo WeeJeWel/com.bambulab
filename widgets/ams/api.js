@@ -25,13 +25,11 @@ module.exports = {
 
     return {
       name: BambuAms.getUnitName({ units, unit: ams }),
-      humidity: 6 - ams.humidity,
       humidityText: BambuAms.getHumidityText({
         unit: ams,
         __: (key, tokens) => homey.__(key, tokens),
       }),
       temperature: ams.temp,
-      trayLoadedId: device.state?.print?.ams?.tray_now,
       trays: ams.tray.map(tray => ({
         id: tray.id,
         color: `#${tray.tray_color?.substr(0, 6)}`,
