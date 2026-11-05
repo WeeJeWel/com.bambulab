@@ -62,9 +62,13 @@ test('titles a spool by AMS, slot, colour and filament', () => {
   assert.equal(spoolTitle({ ...first, ams: 'AMS 2', slot: 3 }, 'en'), 'AMS 2 slot 3: Yellow PLA Tough+');
 });
 
-test('names an AMS unit the same way everywhere', () => {
+test('names an AMS unit the same way everywhere; an AMS HT has id 128 and up', () => {
   assert.equal(amsUnitName(ams, ams[0]), 'AMS');
   assert.equal(amsUnitName(ams, ams[1]), 'AMS HT');
+  // an AMS with one spool loaded is still an AMS, not an HT
+  assert.equal(amsUnitName([{ id: '0', tray: [{ id: '0' }] }], { id: '0', tray: [{ id: '0' }] }), 'AMS');
+  const two = [{ id: '0', tray: [] }, { id: '1', tray: [] }, { id: '128', tray: [] }, { id: '129', tray: [] }];
+  assert.deepEqual(two.map(u => amsUnitName(two, u)), ['AMS 1', 'AMS 2', 'AMS HT 1', 'AMS HT 2']);
 });
 
 test('knows the number the printer uses for the loaded spool, also on an AMS HT (id 128 and up)', () => {

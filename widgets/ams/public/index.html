@@ -9,6 +9,17 @@
       user-select: none;
     }
 
+    #name {
+      color: #9A9A9F;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 8px 2px;
+    }
+
+    #name:empty {
+      display: none;
+    }
+
     #trays {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -176,6 +187,8 @@
 
   <div id="error"></div>
 
+  <div id="name"></div>
+
   <div id="trays">
     <div
       data-tray="0"
@@ -241,8 +254,10 @@
       function getStatus() {
         Homey.api('GET', `/status?deviceId=${deviceId}&amsId=${amsId}`, {})
           .then(({
+            name,
             temperature,
             humidity,
+            humidityText,
             trays,
             trayLoadedId,
           }) => {
@@ -269,7 +284,9 @@
             }
 
             document.querySelector('#sensor-temperature > .text').innerText = `${temperature}°C`;
-            document.querySelector('#sensor-humidity > .text').innerText = `${humidity}`;
+            // the humidity in words (dry ... very humid), the level 1 to 5 only when the app is older
+            document.querySelector('#sensor-humidity > .text').innerText = humidityText ?? `${humidity}`;
+            document.getElementById('name').innerText = name ?? '';
 
             document.getElementById('error').innerText = '';
           })

@@ -21,8 +21,14 @@ module.exports = {
       throw new Error('AMS Not Found');
     }
 
+    // the shared AMS helpers are an ES module; this file is CommonJS
+    const { amsUnitName, humidityText } = await import('../../lib/BambuAms.mjs');
+    const language = homey.i18n.getLanguage();
+
     return {
+      name: amsUnitName(units, ams),
       humidity: 6 - ams.humidity,
+      humidityText: humidityText(6 - ams.humidity, language),
       temperature: ams.temp,
       trayLoadedId: device.state?.print?.ams?.tray_now,
       // whether the 'filament left' capabilities could be made (installed apps show no logs)
