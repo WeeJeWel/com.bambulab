@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { amsSpools, crossedBelow } from '../lib/BambuAms.mjs';
+import { amsSpools, colorName, crossedBelow, spoolTitle } from '../lib/BambuAms.mjs';
 
 const ams = [
   {
@@ -39,4 +39,24 @@ test('says when a spool goes below a limit, once, and not for a new full spool',
   assert.equal(crossedBelow(95, 90, 100), false); // already below: no second message
   assert.equal(crossedBelow(90, 1000, 100), false); // a new spool
   assert.equal(crossedBelow(undefined, 90, 100), false); // just started: nothing known before
+});
+
+test('names the colour of a spool in Dutch or English', () => {
+  assert.equal(colorName('#F4D53F', 'nl'), 'Geel');
+  assert.equal(colorName('#FFFFFF', 'nl'), 'Wit');
+  assert.equal(colorName('#0A2989', 'nl'), 'Blauw');
+  assert.equal(colorName('#F330F9', 'nl'), 'Roze');
+  assert.equal(colorName('#0ACC38', 'nl'), 'Groen');
+  assert.equal(colorName('#000000', 'nl'), 'Zwart');
+  assert.equal(colorName('#8E9089', 'nl'), 'Grijs');
+  assert.equal(colorName('#C12E1F', 'nl'), 'Rood');
+  assert.equal(colorName('#FF6A13', 'nl'), 'Oranje');
+  assert.equal(colorName('#F4D53F', 'en'), 'Yellow');
+  assert.equal(colorName('#undefined', 'nl'), '');
+});
+
+test('titles a spool by AMS, slot, colour and filament', () => {
+  const [first] = amsSpools(ams);
+  assert.equal(spoolTitle(first, 'nl'), 'AMS slot 1: Geel PLA Tough+');
+  assert.equal(spoolTitle({ ...first, ams: 'AMS 2', slot: 3 }, 'en'), 'AMS 2 slot 3: Yellow PLA Tough+');
 });

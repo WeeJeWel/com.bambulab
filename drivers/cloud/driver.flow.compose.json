@@ -75,6 +75,11 @@
           "example": "#F4D53F"
         },
         {
+          "name": "color_name",
+          "type": "string",
+          "example": "Geel"
+        },
+        {
           "name": "grams",
           "type": "number",
           "example": 90

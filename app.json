@@ -228,8 +228,17 @@
             "type": "string",
             "example": "#F4D53F",
             "title": {
-              "en": "Colour",
-              "nl": "Kleur"
+              "en": "Colour code",
+              "nl": "Kleurcode"
+            }
+          },
+          {
+            "name": "color_name",
+            "type": "string",
+            "example": "Geel",
+            "title": {
+              "en": "Colour name",
+              "nl": "Kleurnaam"
             }
           },
           {
