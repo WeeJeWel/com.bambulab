@@ -79,6 +79,11 @@ test('getUnitName: AMS or AMS HT (id 128 and up), numbered when there are severa
   assert.deepEqual(four.map(unit => BambuAms.getUnitName({ units: four, unit })), ['AMS 1', 'AMS 2', 'AMS HT 1', 'AMS HT 2']);
 });
 
+test('getUnitName: the number follows the AMS id, so names stay the same when a unit is unplugged', () => {
+  const units = [{ id: '2' }, { id: '0' }, { id: '129' }, { id: '128' }]; // AMS 2 (id 1) unplugged, any order
+  assert.deepEqual(units.map(unit => BambuAms.getUnitName({ units, unit })), ['AMS 3', 'AMS 1', 'AMS HT 2', 'AMS HT 1']);
+});
+
 test('getLoadedTrays: newer printers report the loaded tray per extruder as (AMS id << 8) | tray', () => {
   // Measured on a P2S with the spool of the AMS HT loaded: tray_now says only the slot
   const print = {
